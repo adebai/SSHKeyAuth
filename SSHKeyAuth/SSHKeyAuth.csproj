@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+	  <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+	  <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <InvariantGlobalization>false</InvariantGlobalization>
+	  <UseWindowsRuntime>true</UseWindowsRuntime>
+	  <EnableWindowsTargeting>true</EnableWindowsTargeting>
+	  <UseWPF>true</UseWPF>
+	  <ApplicationIcon>Assets/app.ico</ApplicationIcon>
+	  <Configurations>Debug;Release;exe</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="SettingsWindow.xaml.cs" />
+    <Compile Remove="ThemeManager.cs" />
+    <Compile Remove="WindowsHelloWPF.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="SettingsWindow.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
+    <PackageReference Include="Hardcodet.Wpf.TaskbarNotification" Version="1.0.5" />
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.14" />
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
+    <PackageReference Include="NHotkey" Version="3.0.0" />
+    <PackageReference Include="NHotkey.Wpf" Version="3.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.2" />
+    <PackageReference Include="System.Windows.Extensions" Version="9.0.2" />
+	<PackageReference Include="InputSimulatorStandard" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,41 @@
+﻿<Window x:Class="SSHKeyAuth.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SSHKeyAuth"
+        mc:Ignorable="d"
+        Title="Settings" Height="400" Width="400">
+    <Grid Margin="10">
+        <StackPanel>
+            <TextBlock Text="Settings" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <!-- Hotkey Configuration -->
+            <TextBlock Text="Set Hotkey:"/>
+            <Button Name="SetHotkeyButton" Click="SetHotkeyButton_Click">Set Hotkey</Button>
+            <TextBlock Name="CurrentHotkeyLabel" FontWeight="Bold" />
+
+            <!-- Auto Paste Toggle -->
+            <CheckBox Name="AutoPasteCheckBox" Content="Enable Auto Paste" Checked="AutoPasteCheckBox_Checked" Unchecked="AutoPasteCheckBox_Checked"/>
+
+            <!-- Tray Behavior -->
+            <TextBlock Text="System Tray Behavior:"/>
+            <ComboBox Name="TrayBehaviorComboBox">
+                <ComboBoxItem Content="Single Click to Open"/>
+                <ComboBoxItem Content="Double Click to Open"/>
+            </ComboBox>
+            
+            <!-- Dark/Light Mode Toggle -->
+            <TextBlock Text="Color Mode:"/>
+            <ComboBox Name="ColorModeComboBox" SelectionChanged="ColorModeComboBox_SelectionChanged">
+                <ComboBoxItem Content="Light"/>
+                <ComboBoxItem Content="Dark"/>
+            </ComboBox>
+
+            <!-- Reset Button -->
+            <Button Name="ResetButton" Click="ResetButton_Click">Reset to Default</Button>
+        </StackPanel>
+    </Grid>
+</Window>
+
+
