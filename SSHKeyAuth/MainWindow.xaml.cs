@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Toolkit.Uwp.Notifications;
 using System.Windows.Controls.Primitives;
+using static System.Windows.Forms.DataFormats;
 
 namespace SSHKeyAuth
 {
@@ -149,13 +150,37 @@ namespace SSHKeyAuth
         public async void Authenticate()
         {
             IntPtr previousWindow = previousWindowHandle = lastActiveWindow; // Store the active window before authentication
-            string originalClipboard = System.Windows.Clipboard.ContainsText() ? System.Windows.Clipboard.GetText() : string.Empty;
+            MainWindow handle = bringUp();
+            object clipboardData;
+            string dataType;
+            Dictionary<string, object>
+
+                        // Backup clipboard 
+                        lBackup = new Dictionary<string, object>();
+            System.Windows.IDataObject lDataObject = System.Windows.Clipboard.GetDataObject();
+            String[] lFormats = lDataObject.GetFormats(false);
+            try
+            {
+                foreach (var lFormat in lFormats)
+                {
+                    lBackup.Add(lFormat, lDataObject.GetData(lFormat, false));
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (e.g., log it, display a message, etc.)
+                Console.WriteLine("An error occurred: " + ex.Message);
+            }
+
+
             string previousWindowName = GetWindowTitle(previousWindow);
 
             if (await AuthenticateUser())
             {
+                handle.Close();
                 string passphrase = DecryptPassphrase(GetActivePassphrase());
 
+                // 
                 if (AutoPasteCheckBox.IsChecked == true)
                 {
                     System.Windows.Clipboard.SetText(passphrase);
@@ -163,18 +188,36 @@ namespace SSHKeyAuth
                     RestorePreviousWindow(); // Ensure the right window is active
                     // Simulate Ctrl+V to paste
                     SendKeys.SendWait("^v");
+                    lDataObject = new System.Windows.DataObject();
+                    try
+                    {
+                        foreach (var lFormat in lFormats)
+                        {
+                            lDataObject.SetData(lFormat, lBackup[lFormat]);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle the exception (e.g., log it, display a message, etc.)
+                        Console.WriteLine("An error occurred: " + ex.Message);
+                    }
+                    //This might be unnecessary
+                    System.Windows.Clipboard.SetDataObject(lDataObject);
+
                     NotifyUser("Authentication Successful", $"Pasted {selectedPhrase} passphrase into \"{previousWindowName}\"", false);
                 }
                 else
                 {
                     System.Windows.Clipboard.SetText(passphrase);
                     await Task.Delay(500); // Small delay to allow the window to gain focus
-                    RestorePreviousWindow(); // Ensure the right window is active
+                    //RestorePreviousWindow(); // Ensure the right window is active
+                    //System.Windows.Clipboard.Clear();
                     NotifyUser("Authentication Successful", "Passphrase copied to clipboard!", false);
                 }
             }
             else
             {
+                handle.Close();
                 RestoreActiveWindow(); // Restore after authentication
                 NotifyUser("Authentication Failed", "Windows Hello verification failed.", true);
             }
@@ -199,20 +242,40 @@ namespace SSHKeyAuth
             }
         }
 
+        private MainWindow bringUp()
+        {
+            // Check if MainWindow is already open
+            foreach (Window window in System.Windows.Application.Current.Windows)
+            {
+                if (window is MainWindow mainWindow)
+                {
+                    mainWindow.Show();
+                    mainWindow.WindowState = WindowState.Normal; // Restore if minimized
+                    mainWindow.Activate(); // Bring the window to the foreground
+                    mainWindow.Topmost = true; // Ensure it's on top
+                    mainWindow.Topmost = false; // Reset Topmost so it doesn't stay always on top
+                    mainWindow.Focus(); // Set focus to the window
+                    //Thread.Sleep(1000); // Optional delay
+                    return mainWindow;
+                }
+            }
 
+            // If not open, create and show a new MainWindow
+            MainWindow newWindow = new MainWindow();
+            newWindow.Show();
+            newWindow.WindowState = WindowState.Normal;
+            newWindow.Activate(); // Bring the new window to the foreground
+            newWindow.Topmost = true; // Ensure it's on top
+            newWindow.Topmost = false; // Reset Topmost so it doesn't stay always on top
+            newWindow.Focus(); // Set focus to the window
+            //Thread.Sleep(1000); // Optional delay
+            return newWindow;
+        }
         private async Task<bool> AuthenticateUser()
         {
             try
             {
                 var result = await UserConsentVerifier.RequestVerificationAsync("Authenticate to access passphrase");
-                // Try to bring Windows Hello to the front
-                IntPtr helloWindow = FindWindowsHelloWindow();
-                if (helloWindow != IntPtr.Zero)
-                {
-                    ShowWindow(helloWindow, SW_RESTORE);
-                    SetForegroundWindow(helloWindow);
-                }
-
                 return result == UserConsentVerificationResult.Verified;
             }
             catch (Exception ex)
@@ -438,7 +501,7 @@ namespace SSHKeyAuth
         {
             if (previousWindowHandle != IntPtr.Zero)
             {
-                ShowWindow(previousWindowHandle, SW_RESTORE); // Restore if minimized
+                //ShowWindow(previousWindowHandle, SW_RESTORE); // Restore if minimized
                 SetForegroundWindow(previousWindowHandle);    // Bring to front
             }
         }

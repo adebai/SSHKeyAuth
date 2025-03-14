@@ -15,6 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AesEncryptionHelper.cs" />
+    <Compile Remove="AESHelper.cs" />
     <Compile Remove="SettingsWindow.xaml.cs" />
     <Compile Remove="ThemeManager.cs" />
     <Compile Remove="WindowsHelloWPF.cs" />
